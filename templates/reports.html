@@ -1,0 +1,100 @@
+{% extends "layout/base.html" %} {% block page_title %}Business Reports{% endblock %} {% block page_subtitle %}Generate and download your business analysis reports{% endblock %} {% block content %} {% with messages = get_flashed_messages() %} {% if messages
+%}
+<div class="success-box">{{ messages[0] }}</div>
+{% endif %} {% endwith %} {% if not has_data %}
+
+<section class="empty-state">
+    <div class="empty-icon">📄</div>
+    <h2>No report available yet</h2>
+    <p>Upload your transaction data first before generating a business health report.</p>
+    <a href="{{ url_for('upload.upload_data') }}" class="primary-btn">Upload Dataset</a>
+</section>
+
+{% else %}
+
+<section class="report-grid">
+    <div class="report-card">
+        <h3>Business Health Report</h3>
+        <p>Generate a downloadable report containing revenue, expenses, profit, risk level, health score, and AI recommendations.</p>
+        <a href="{{ url_for('reports.generate_report') }}" class="primary-btn">Generate Report</a>
+    </div>
+
+    <div class="report-card">
+        <h3>Current Health Score</h3>
+        <p>Your current AI-powered business health score.</p>
+        <h2>{{ health_score }}%</h2>
+        <span>{{ risk_level }}</span>
+    </div>
+
+    <div class="report-card">
+        <h3>Records Analyzed</h3>
+        <p>Total uploaded business transaction records analyzed.</p>
+        <h2>{{ summary.transactions }}</h2>
+        <span>Transactions</span>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <p>Total Revenue</p>
+        <h3>₦{{ "{:,.0f}".format(summary.total_income) }}</h3>
+        <span>Report summary</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Total Expenses</p>
+        <h3>₦{{ "{:,.0f}".format(summary.total_expenses) }}</h3>
+        <span>Report summary</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Net Profit</p>
+        <h3>₦{{ "{:,.0f}".format(summary.net_profit) }}</h3>
+        <span>Report summary</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Profit Margin</p>
+        <h3>{{ "{:.2f}".format(summary.profit_margin) }}%</h3>
+        <span>Report summary</span>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <h3>Report History</h3>
+        <p>Previously generated reports for this account</p>
+    </div>
+
+    {% if report_history %}
+    <div class="table-wrapper">
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Report Name</th>
+                    <th>Date Generated</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for report in report_history %}
+                <tr>
+                    <td>{{ report.report_name }}</td>
+                    <td>{{ report.created_at }}</td>
+                    <td>
+                        <a href="{{ url_for('reports.download_report', report_id=report.id) }}" class="download-link">
+                            Download
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="muted-text">No reports generated yet.</p>
+    {% endif %}
+</section>
+
+{% endif %} {% endblock %}

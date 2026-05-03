@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register | CloudSentinel Insight AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="auth-body">
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-logo">CS</div>
+
+            <h1>Create Account</h1>
+            <p>Start analyzing your SME business data with AI.</p>
+
+            {% with messages = get_flashed_messages() %} {% if messages %}
+            <div class="auth-alert">{{ messages[0] }}</div>
+            {% endif %} {% endwith %}
+
+            <form method="POST">
+                <label>Full Name</label>
+                <input type="text" name="full_name" required>
+
+                <label>Business Name</label>
+                <input type="text" name="business_name" required>
+
+                <label>Email Address</label>
+                <input type="email" name="email" required>
+
+                <label>Password</label>
+                <input type="password" name="password" required>
+
+                <button type="submit" class="primary-btn full-btn">Create Account</button>
+            </form>
+
+            <small>
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}">Login</a>
+        </small>
+        </div>
+    </div>
+
+</body>
+
+</html>

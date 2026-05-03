@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CloudSentinel Insight AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="app">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="CloudSentinel AI Logo">
+                </div>
+                <div>
+                    <h2>CloudSentinel</h2>
+                    <span>Insight AI</span>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="/" class="active">Dashboard</a>
+                <a href="/analytics">Analytics</a>
+                <a href="/upload">Upload Data</a>
+                <a href="/reports">Reports</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>AI Business Health Analyzer</p>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <h1>{% block page_title %}{% endblock %}</h1>
+                    <p>{% block page_subtitle %}{% endblock %}</p>
+                </div>
+
+                <div class="user-box">
+                    <span>{{ session.get("business_name", "Business") }}</span>
+                    <div class="avatar">{{ session.get("full_name", "U")[:2].upper() }}</div>
+                </div>
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+
+    </div>
+
+    <script>
+        const trendData = {
+            {
+                (trend or[]) | tojson | safe
+            }
+        };
+        const categoryData = {
+            {
+                (category_data or[]) | tojson | safe
+            }
+        };
+    </script>
+
+    {% block scripts %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+
+</html>

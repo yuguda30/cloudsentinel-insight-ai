@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+database/app.db
+data/uploads/*
+reports/generated/*
+.DS_Store
+.vscode/

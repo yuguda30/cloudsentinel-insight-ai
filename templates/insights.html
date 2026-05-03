@@ -1,0 +1,38 @@
+{% extends "layout/base.html" %}
+
+{% block page_title %}AI Insights{% endblock %}
+{% block page_subtitle %}Smart recommendations generated from business records{% endblock %}
+
+{% block content %}
+
+<section class="hero-panel">
+    <div>
+        <span class="badge">AI Analysis</span>
+        <h2>{{ risk_level }}</h2>
+        <p>Your current business health score is <strong>{{ health_score }}%</strong>.</p>
+    </div>
+
+    <div class="score-circle">
+        <span>{{ health_score }}%</span>
+        <small>AI Score</small>
+    </div>
+</section>
+
+<section class="recommendation-section">
+    <div class="section-title">
+        <h3>Recommended Actions</h3>
+        <p>These actions can help improve your business performance.</p>
+    </div>
+
+    <div class="recommendation-grid">
+        {% for rec in recommendations %}
+        <div class="recommendation-card {{ rec.priority|lower }}">
+            <span>{{ rec.priority }} Priority</span>
+            <h4>{{ rec.title }}</h4>
+            <p>{{ rec.message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
