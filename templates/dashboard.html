@@ -1,0 +1,170 @@
+{% extends "layout/base.html" %} {% block page_title %}Business Health Dashboard{% endblock %} {% block page_subtitle %}AI-powered overview of your SME performance{% endblock %} {% block content %} {% if not has_data %}
+
+<section class="empty-state">
+    <div class="empty-icon">📊</div>
+    <h2>No business data yet</h2>
+    <p>Upload your CSV or Excel transaction records to start AI analysis.</p>
+    <a href="{{ url_for('upload.upload_data') }}" class="primary-btn">Upload Dataset</a>
+</section>
+
+{% else %}
+
+<section class="hero-panel">
+    <div>
+        <span class="badge">AI Insight Active</span>
+        <h2>Your business health score is {{ health_score }}%</h2>
+        <p>Current risk level: <strong class="risk-text">{{ risk_level }}</strong></p>
+    </div>
+
+    <div class="score-circle">
+        <span>{{ health_score }}%</span>
+        <small>Health Score</small>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <p>Total Revenue</p>
+        <h3>₦{{ "{:,.0f}".format(summary.total_income) }}</h3>
+        <span class="positive">Income generated</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Total Expenses</p>
+        <h3>₦{{ "{:,.0f}".format(summary.total_expenses) }}</h3>
+        <span class="negative">Business spending</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Net Profit</p>
+        <h3>₦{{ "{:,.0f}".format(summary.net_profit) }}</h3>
+        <span class="positive">After expenses</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Transactions</p>
+        <h3>{{ summary.transactions }}</h3>
+        <span>Records analyzed</span>
+    </div>
+</section>
+
+<section class="dashboard-grid">
+    <div class="panel large">
+        <div class="panel-header">
+            <h3>Revenue vs Expenses</h3>
+            <p>Last 12 months performance trend</p>
+        </div>
+        <canvas id="dashboardTrendChart"></canvas>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <h3>Top Expense Categories</h3>
+            <p>Where your money goes most</p>
+        </div>
+        <canvas id="dashboardCategoryChart"></canvas>
+    </div>
+</section>
+
+<section class="recommendation-section">
+    <div class="section-title">
+        <h3>AI Recommendations</h3>
+        <p>Actionable suggestions generated from your business data</p>
+    </div>
+
+    <div class="recommendation-grid">
+        {% for rec in recommendations %}
+        <div class="recommendation-card {{ rec.priority|lower }}">
+            <span>{{ rec.priority }} Priority</span>
+            <h4>{{ rec.title }}</h4>
+            <p>{{ rec.message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endif %} {% endblock %} {% block scripts %}
+<script>
+    const dashboardTrendData = {
+        {
+            trend |
+                default ([]) | tojson | safe
+        }
+    };
+    const dashboardCategoryData = {
+        {
+            category_data |
+                default ([]) | tojson | safe
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const trendCanvas = document.getElementById("dashboardTrendChart");
+        const categoryCanvas = document.getElementById("dashboardCategoryChart");
+
+        if (trendCanvas && dashboardTrendData.length > 0) {
+            new Chart(trendCanvas, {
+                type: "line",
+                data: {
+                    labels: dashboardTrendData.map(item => item.month),
+                    datasets: [{
+                        label: "Revenue",
+                        data: dashboardTrendData.map(item => item.Income || item.income || 0),
+                        borderWidth: 3,
+                        tension: 0.4
+                    }, {
+                        label: "Expenses",
+                        data: dashboardTrendData.map(item => item.Expense || item.expense || 0),
+                        borderWidth: 3,
+                        tension: 0.4
+                    }, {
+                        label: "Profit",
+                        data: dashboardTrendData.map(item => item.Profit || item.profit || 0),
+                        borderWidth: 3,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: value => "₦" + Number(value).toLocaleString()
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (categoryCanvas && dashboardCategoryData.length > 0) {
+            new Chart(categoryCanvas, {
+                type: "doughnut",
+                data: {
+                    labels: dashboardCategoryData.map(item => item.category),
+                    datasets: [{
+                        label: "Expenses",
+                        data: dashboardCategoryData.map(item => item.amount || 0),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
