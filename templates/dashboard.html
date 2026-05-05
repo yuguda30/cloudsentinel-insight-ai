@@ -62,7 +62,7 @@
             <h3>Top Expense Categories</h3>
             <p>Where your money goes most</p>
         </div>
-        <canvas id="categoryChart"></canvas>
+        <canvas id="dashboardCategoryChart"></canvas>
     </div>
 </section>
 
@@ -83,22 +83,15 @@
     </div>
 </section>
 
-{% endif %} {% endblock %} {% block scripts %}
-<script>
-    const dashboardTrendData = {
-        {
-            trend |
-                default ([]) | tojson | safe
-        }
-    };
-    const dashboardCategoryData = {
-        {
-            category_data |
-                default ([]) | tojson | safe
-        }
-    };
+{% endif %}
+{% endblock %}
 
-    document.addEventListener("DOMContentLoaded", function() {
+{% block scripts %}
+<script>
+    const dashboardTrendData = {{ trend | default([]) | tojson | safe }};
+    const dashboardCategoryData = {{ category_data | default([]) | tojson | safe }};
+
+    document.addEventListener("DOMContentLoaded", function () {
         const trendCanvas = document.getElementById("dashboardTrendChart");
         const categoryCanvas = document.getElementById("dashboardCategoryChart");
 
@@ -107,30 +100,32 @@
                 type: "line",
                 data: {
                     labels: dashboardTrendData.map(item => item.month),
-                    datasets: [{
-                        label: "Revenue",
-                        data: dashboardTrendData.map(item => item.Income || item.income || 0),
-                        borderWidth: 3,
-                        tension: 0.4
-                    }, {
-                        label: "Expenses",
-                        data: dashboardTrendData.map(item => item.Expense || item.expense || 0),
-                        borderWidth: 3,
-                        tension: 0.4
-                    }, {
-                        label: "Profit",
-                        data: dashboardTrendData.map(item => item.Profit || item.profit || 0),
-                        borderWidth: 3,
-                        tension: 0.4
-                    }]
+                    datasets: [
+                        {
+                            label: "Revenue",
+                            data: dashboardTrendData.map(item => item.Income || item.income || 0),
+                            borderWidth: 3,
+                            tension: 0.4
+                        },
+                        {
+                            label: "Expenses",
+                            data: dashboardTrendData.map(item => item.Expense || item.expense || 0),
+                            borderWidth: 3,
+                            tension: 0.4
+                        },
+                        {
+                            label: "Profit",
+                            data: dashboardTrendData.map(item => item.Profit || item.profit || 0),
+                            borderWidth: 3,
+                            tension: 0.4
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: "bottom"
-                        }
+                        legend: { position: "bottom" }
                     },
                     scales: {
                         y: {
@@ -148,23 +143,26 @@
                 type: "doughnut",
                 data: {
                     labels: dashboardCategoryData.map(item => item.category),
-                    datasets: [{
-                        label: "Expenses",
-                        data: dashboardCategoryData.map(item => item.amount || 0),
-                        borderWidth: 2
-                    }]
+                    datasets: [
+                        {
+                            label: "Expenses",
+                            data: dashboardCategoryData.map(item => item.amount || 0),
+                            borderWidth: 2
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: "bottom"
-                        }
+                        legend: { position: "bottom" }
                     }
                 }
             });
         }
+    });
+</script>
+{% endblock %}
     });
 </script>
 {% endblock %}
